@@ -40,13 +40,52 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     // ignore: no_leading_underscores_for_local_identifiers
-    OutlineInputBorder _border() {
+    OutlineInputBorder borderStyles() {
       return OutlineInputBorder(
           borderSide: const BorderSide(
             width: 0,
             style: BorderStyle.none,
           ),
           borderRadius: BorderRadius.circular(20));
+    }
+
+    Container line() {
+      return Container(
+        width: deviceWidth,
+        height: 0.2,
+        color: const Color.fromARGB(255, 100, 100, 100),
+      );
+    }
+
+    Card ruleBox(RulesMap rules) {
+      return Card(
+        shape: RoundedRectangleBorder(
+            //<-- SEE HERE
+            side: const BorderSide(
+              color: Color.fromARGB(255, 188, 188, 188),
+            ),
+            borderRadius: BorderRadius.circular(20)),
+        color: const Color.fromARGB(31, 67, 67, 67),
+        margin: const EdgeInsets.symmetric(vertical: 15),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: deviceWidth - 50,
+            child: RichText(
+              overflow: TextOverflow.ellipsis,
+              maxLines: null,
+              text: TextSpan(
+                text: rules.description,
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 210, 210, 210),
+                  height: 1.4,
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     return Scaffold(
@@ -62,44 +101,13 @@ class _MyAppState extends State<MyApp> {
             Center(
               child: SizedBox(
                 width: deviceWidth - 50,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: hint,
-                    filled: true,
-                    fillColor: const Color.fromARGB(31, 255, 255, 255),
-                    disabledBorder: _border(),
-                    hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 180, 180, 180),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                    border: _border(),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      hint = "";
-                    });
-                  },
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  onChanged: (text) {
-                    setState(() {
-                      inputRules = text;
-                    });
-                  },
-                ),
+                child: ruleInput(borderStyles),
               ),
             ),
             const SizedBox(
               height: 30,
             ),
-            Container(
-              width: deviceWidth,
-              color: Colors.white12,
-              height: 1,
-            ),
+            line(),
             const SizedBox(
               height: 20,
             ),
@@ -118,27 +126,8 @@ class _MyAppState extends State<MyApp> {
                     physics: const NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     itemBuilder: (c, i) {
-                      return Card(
-                        color: Color.fromARGB(255, 227, 227, 227),
-                        margin: const EdgeInsets.symmetric(vertical: 15),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: deviceWidth - 50,
-                            child: RichText(
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: null,
-                              text: TextSpan(
-                                text: Rules[i].description,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  height: 1.4,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return Column(
+                        children: [ruleBox(Rules[i]), line()],
                       );
                     })
               ],
@@ -146,6 +135,37 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
       ),
+    );
+  }
+
+  TextField ruleInput(OutlineInputBorder borderStyles()) {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: const Color.fromARGB(31, 255, 255, 255),
+        disabledBorder: borderStyles(),
+        hintStyle: const TextStyle(
+            color: Color.fromARGB(255, 180, 180, 180),
+            fontWeight: FontWeight.bold,
+            fontSize: 18),
+        border: borderStyles(),
+      ),
+      onTap: () {
+        setState(() {
+          hint = "";
+        });
+      },
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+      onChanged: (text) {
+        setState(() {
+          inputRules = text;
+        });
+      },
     );
   }
 }
