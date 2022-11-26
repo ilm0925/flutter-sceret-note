@@ -7,6 +7,10 @@ import 'Custom_Widgets.dart';
 
 void main() {
   runApp(const MaterialApp(
+    initialRoute: '/',
+    routes: {
+      // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
+    },
     home: MyApp(),
   ));
 }
