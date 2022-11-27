@@ -35,4 +35,3 @@ Text C_Text(String text, Color color, double size) {
     style: TextStyle(color: color, fontSize: size),
   );
 }
-

@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
+import 'package:secret_note/crypto.dart';
 import 'package:secret_note/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'Custom_Widgets.dart';
 
 void main() {
@@ -67,12 +68,19 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences pref = await _prefs;
     List<String>? importedRules = pref.getStringList("rules");
     importedRules ??= [];
-    // importedRules.add(jsonEncode(Rule));
-    importedRules.add(json.encode(rule));
-    pref.setStringList("rules", importedRules);
-    setState(() {
-      Rules = importedRules!;
-    });
+    String? hash = pref.getString("password");
+    if (hash != null) {
+      Crypto crypto = Crypto("hashhashhashhash", 16);
+      rule[1] = crypto.encryptBase64(rule[1]);
+      importedRules.add(json.encode(rule));
+      pref.setStringList("rules", importedRules);
+      importedRules.removeLast();
+      rule[1] = crypto.decryptBase64(rule[1]);
+      importedRules.add(json.encode(rule));
+      setState(() {
+        Rules = importedRules!;
+      });
+    }
   }
 
   @override
