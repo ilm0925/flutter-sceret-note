@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:intl/intl.dart';
 import 'package:secret_note/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_Widgets.dart';
@@ -121,7 +122,10 @@ class _MyAppState extends State<MyApp> {
         scrollDirection: Axis.vertical,
         itemBuilder: (c, i) {
           return Column(
-            children: [ruleBox(json.decode(Rules[i])), line()],
+            children: [
+              ruleBox(json.decode(Rules[i]), i),
+              line(),
+            ],
           );
         });
   }
@@ -143,10 +147,10 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  InkWell ruleBox(List<dynamic> rule) {
+  InkWell ruleBox(List<dynamic> rule, int index) {
     return InkWell(
       onTap: () {
-        popup(rule[1]);
+        popup(rule[1], rule[0], index);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -193,7 +197,11 @@ class _MyAppState extends State<MyApp> {
         border: borderStyles(),
       ),
       onSubmitted: (text) {
-        addRule([DateTime.now().toString(), text, 5.toString()]);
+        addRule([
+          DateFormat('yyyy년MM월dd일').format(DateTime.now()),
+          text,
+          5.toString()
+        ]);
       },
       onTap: () {
         setState(() {
@@ -213,41 +221,41 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void popup(String rule) {
+  void popup(String rule, String Date, int index) {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            backgroundColor: Colors.black45,
+            backgroundColor: Colors.black54,
+            title: Text(Date,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 18)),
             content: Text(rule,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 18)),
             actions: <Widget>[
               TextButton(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 1,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 24.0,
-                      ),
-                    ],
-                  ),
+                child: const Icon(
+                  Icons.check,
+                  color: Colors.white,
+                  size: 24.0,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
+              TextButton(
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                  size: 24.0,
+                ),
+                onPressed: () {
+                  print(index);
+                },
+              ),
             ],
+            actionsAlignment: MainAxisAlignment.spaceAround,
           );
         });
   }
