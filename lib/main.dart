@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
-      appBar: Nav(),
+      appBar: Nav(true),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

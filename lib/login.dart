@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:secret_note/Custom_Widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,11 +11,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
-      appBar: Nav(),
+      appBar: Nav(false),
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width - 50,
