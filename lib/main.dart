@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:secret_note/Rules.dart';
-import 'package:secret_note/login.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:secret_note/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Custom_Widgets.dart';
 
 void main() {
@@ -23,19 +25,48 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String hint = "규칙 입력";
-  String inputRules = "";
+  String inputRules = "규칙을 추가해주세요";
 
   // ignore: non_constant_identifier_names
-  List<RulesMap> Rules = [
-    RulesMap(DateTime.now(), "규칙 1", 5),
-    RulesMap(DateTime.now(), "규칙 2", 5),
-    RulesMap(DateTime.now(), "규칙 3", 5),
-    RulesMap(DateTime.now(), "규칙 4", 5),
-    RulesMap(DateTime.now(), "규칙 5", 5),
-    RulesMap(DateTime.now(), "규칙 6", 5),
-  ];
-
+  var Rules = [];
+  String title = "";
   double deviceWidth = 300;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  void getRules() async {
+    SharedPreferences prefs = await _prefs;
+    List<String>? importedRules = prefs.getStringList("rules");
+    if (importedRules == null) {
+      setState(() {
+        title = "규칙 추가하기";
+        Rules = [];
+      });
+      return;
+    }
+    setState(() {
+      Rules = importedRules;
+      title = "이건 꼭 지키기";
+    });
+  }
+
+  void addRule(List<String> rule) async {
+    SharedPreferences pref = await _prefs;
+    List<String>? importedRules = pref.getStringList("rules");
+    importedRules ??= [];
+    // importedRules.add(jsonEncode(Rule));
+    importedRules.add(json.encode(rule));
+    pref.setStringList("rules", importedRules);
+    setState(() {
+      Rules = importedRules!;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getRules();
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
@@ -65,32 +96,34 @@ class _MyAppState extends State<MyApp> {
             const SizedBox(
               height: 20,
             ),
-            const Text(
-              "이건 꼭 지키기",
-              style: TextStyle(
+            Text(
+              title,
+              style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
                   fontSize: 30),
             ),
             const SizedBox(height: 10),
             Column(
-              children: [
-                ListView.builder(
-                    itemCount: Rules.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (c, i) {
-                      return Column(
-                        children: [ruleBox(Rules[i]), line()],
-                      );
-                    })
-              ],
+              children: [boxBuilder()],
             )
           ],
         ),
       ),
     );
+  }
+
+  dynamic boxBuilder() {
+    return ListView.builder(
+        itemCount: Rules.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        itemBuilder: (c, i) {
+          return Column(
+            children: [ruleBox(json.decode(Rules[i])), line()],
+          );
+        });
   }
 
   OutlineInputBorder borderStyles() {
@@ -110,10 +143,10 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  InkWell ruleBox(RulesMap rules) {
+  InkWell ruleBox(List<dynamic> rule) {
     return InkWell(
       onTap: () {
-        Popup(rules.description,context);
+        popup(rule[1]);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -132,7 +165,7 @@ class _MyAppState extends State<MyApp> {
               overflow: TextOverflow.ellipsis,
               maxLines: null,
               text: TextSpan(
-                text: rules.description,
+                text: rule[1],
                 style: const TextStyle(
                   color: Color.fromARGB(255, 210, 210, 210),
                   height: 1.4,
@@ -145,8 +178,6 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
-  
 
   TextField ruleInput(OutlineInputBorder Function() borderStyles) {
     return TextField(
@@ -161,6 +192,9 @@ class _MyAppState extends State<MyApp> {
             fontSize: 18),
         border: borderStyles(),
       ),
+      onSubmitted: (text) {
+        addRule([DateTime.now().toString(), text, 5.toString()]);
+      },
       onTap: () {
         setState(() {
           hint = "";
@@ -177,5 +211,44 @@ class _MyAppState extends State<MyApp> {
         });
       },
     );
+  }
+
+  void popup(String rule) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.black45,
+            content: Text(rule,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 18)),
+            actions: <Widget>[
+              TextButton(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 1,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
   }
 }

@@ -13,6 +13,44 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  void Popup(String text) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.black45,
+            content: Text(text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 18)),
+            actions: <Widget>[
+              TextButton(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 1,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 24.0,
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +101,7 @@ class _LoginState extends State<Login> {
       if (crypto.encryptSHA256(text) == hash) {
         Navigator.pushNamed(context, '/note');
       } else {
-        Popup("비밀번호 틀림", context);
+        Popup("비밀번호 틀림");
       }
     }
   }
