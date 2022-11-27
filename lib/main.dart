@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   void getRules() async {
     SharedPreferences prefs = await _prefs;
     List<String>? importedRules = prefs.getStringList("rules");
-    if (importedRules == null) {
+    if (importedRules == null || importedRules.isEmpty) {
       setState(() {
         title = "규칙 추가하기";
         Rules = [];
@@ -47,6 +47,19 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       Rules = importedRules;
       title = "이건 꼭 지키기";
+    });
+  }
+
+  void dropRule(int index) async {
+    SharedPreferences pref = await _prefs;
+    List<String>? importedRules = pref.getStringList("rules");
+    if (importedRules == null) {
+      return;
+    }
+    importedRules.removeAt(index);
+    pref.setStringList("rules", importedRules);
+    setState(() {
+      Rules = importedRules;
     });
   }
 
@@ -251,7 +264,8 @@ class _MyAppState extends State<MyApp> {
                   size: 24.0,
                 ),
                 onPressed: () {
-                  print(index);
+                  dropRule(index);
+                  Navigator.pop(context);
                 },
               ),
             ],
