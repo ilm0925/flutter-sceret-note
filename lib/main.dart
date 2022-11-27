@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> {
   InkWell ruleBox(RulesMap rules) {
     return InkWell(
       onTap: () {
-        detail(rules.description);
+        Popup(rules.description,context);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -146,44 +146,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void detail(String rule) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            backgroundColor: Colors.black45,
-            content: Text(rule,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 18)),
-            actions: <Widget>[
-              TextButton(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 1,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 24.0,
-                      ),
-                    ],
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
-  }
+  
 
   TextField ruleInput(OutlineInputBorder Function() borderStyles) {
     return TextField(

@@ -29,10 +29,48 @@ AppBar Nav(bool isLogin) {
   );
 }
 
-@override
 Text C_Text(String text, Color color, double size) {
   return Text(
     text,
     style: TextStyle(color: color, fontSize: size),
   );
+}
+
+void Popup(String rule, context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black45,
+          content: Text(rule,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 18)),
+          actions: <Widget>[
+            TextButton(
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 1,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 24.0,
+                    ),
+                  ],
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
 }

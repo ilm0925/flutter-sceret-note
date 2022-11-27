@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:secret_note/Custom_Widgets.dart';
+import 'package:secret_note/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -11,6 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +31,14 @@ class _LoginState extends State<Login> {
                 obscureText: true,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white),
-                onSubmitted: (String text) {
-                  passwordController.clear();
-                  Navigator.pushNamed(context, '/note');
-                },
+                onSubmitted: submit,
                 controller: passwordController,
                 decoration: InputDecoration(
                     border: borderStyle(),
                     enabledBorder: borderStyle(),
                     disabledBorder: borderStyle(),
                     focusedBorder: borderStyle(),
-                    labelText: '비밀번호',
+                    labelText: "비밀번호 입력",
                     floatingLabelAlignment: FloatingLabelAlignment.center,
                     labelStyle:
                         const TextStyle(color: Colors.white60, fontSize: 20)),
@@ -49,6 +48,24 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  void submit(String text) async {
+    passwordController.clear();
+    SharedPreferences prefs = await _prefs;
+    String? hash = prefs.getString("password");
+    if (hash == null) {
+      prefs.setString("password",
+          "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4");
+      Navigator.pushNamed(context, '/note');
+    } else {
+      Crypto crypto = Crypto(hash, 16);
+      if (crypto.encryptSHA256(text) == hash) {
+        Navigator.pushNamed(context, '/note');
+      } else {
+        Popup("비밀번호 틀림", context);
+      }
+    }
   }
 
   OutlineInputBorder borderStyle() {
