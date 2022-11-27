@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:secret_note/Custom_Widgets.dart';
 
 class Login extends StatefulWidget {
@@ -11,7 +9,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +28,10 @@ class _LoginState extends State<Login> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white),
                 onSubmitted: (String text) {
+                  passwordController.clear();
+                  Navigator.pushNamed(context, '/note');
                 },
+                controller: passwordController,
                 decoration: InputDecoration(
                     border: borderStyle(),
                     enabledBorder: borderStyle(),
