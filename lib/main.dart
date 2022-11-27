@@ -8,7 +8,6 @@ void main() {
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
-      // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
       '/note': (context) => const MyApp(),
     },
     home: const Login(),
@@ -26,6 +25,7 @@ class _MyAppState extends State<MyApp> {
   String hint = "규칙 입력";
   String inputRules = "";
 
+  // ignore: non_constant_identifier_names
   List<RulesMap> Rules = [
     RulesMap(DateTime.now(), "규칙 1", 5),
     RulesMap(DateTime.now(), "규칙 2", 5),
@@ -33,7 +33,6 @@ class _MyAppState extends State<MyApp> {
     RulesMap(DateTime.now(), "규칙 4", 5),
     RulesMap(DateTime.now(), "규칙 5", 5),
     RulesMap(DateTime.now(), "규칙 6", 5),
-    RulesMap(DateTime.now(), "규칙 10", 5),
   ];
 
   double deviceWidth = 300;
