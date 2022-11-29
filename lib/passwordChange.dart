@@ -69,30 +69,35 @@ class _PasswordChageState extends State<PasswordChage> {
       validatePassword();
     } catch (e) {
       passwordValidateError(context);
+      return;
     }
     // 모든 글들을 decrypt => 새 비번으로 encrypt 반복
     SharedPreferences prefs = await _prefs;
+
     String key = Provider.of<KeyProvider>(context, listen: false).getKey;
     List<String>? rules = await getRules();
     Crypto crypto = Crypto(key);
     String newHash = crypto.encryptSHA256(newPasswordController.text);
-    prefs.setString("password", newHash);
-    if (rules == null || rules.isEmpty) {
-    } else {
-      if (newPasswordController.text.length < 3) {
+    if (newPasswordController.text.length < 3) {
+      setState(() {
+        errorState = true;
+        errorMessage = "새 비밀번호는 4자 이상이어야합니다";
+      });
+      Timer(const Duration(seconds: 5), () {
         setState(() {
-          errorState = true;
-          errorMessage = "새 비밀번호는 4자 이상이어야합니다";
+          errorState = false;
         });
-        Timer(const Duration(seconds: 5), () {
-          setState(() {
-            errorState = false;
-          });
-        });
-        return;
-      }
+      });
+      return;
+    }
+    if (rules == null || rules.isEmpty) {
+      prefs.setString("password", newHash);
+      setState(() {
+        Changed = true;
+      });
+      return;
+    } else {
       List<String> newRules = [];
-
       String newKey = Provider.of<KeyProvider>(context, listen: false)
           .convertToKey(newPasswordController.text);
       Crypto newCrypter = Crypto(newKey);
@@ -104,15 +109,16 @@ class _PasswordChageState extends State<PasswordChage> {
         });
         List<dynamic> originalRule = json.decode(rules[i]);
         String decrypted = crypto.decryptBase64(originalRule[1]);
+        print(decrypted);
         String newEncryptedRule = newCrypter.encryptBase64(decrypted);
         originalRule[1] = newEncryptedRule;
         newRules.add(json.encode(originalRule));
       }
-      print(newRules);
-        prefs.setStringList("rules", newRules);
+      prefs.setStringList("rules", newRules);
       setState(() {
         Changed = true;
       });
+      prefs.setString("password", newHash);
     }
   }
 
@@ -151,6 +157,12 @@ class _PasswordChageState extends State<PasswordChage> {
     if (hashcode == null) {
       return;
     }
+    String key = Provider.of<KeyProvider>(context, listen: false).getKey;
+    Crypto Crypter = Crypto(key);
+    if (Crypter.encryptSHA256(currentPasswordController.text) == hashcode) {
+      return;
+    }
+    throw "비밀번호 틀림";
   }
 
   void checkExist() async {

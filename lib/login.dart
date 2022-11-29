@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
       Navigator.pushNamed(context, '/note');
     } else {
       Crypto crypto = Crypto(hash);
-      if (crypto.encryptSHA256(text) == hash || text == "1234") {
+      if (crypto.encryptSHA256(text) == hash) {
         // print(Provider.of<KeyProvider>(context).getKey);
         Provider.of<KeyProvider>(context, listen: false).setKey(text);
         Navigator.pushNamed(context, '/note');
