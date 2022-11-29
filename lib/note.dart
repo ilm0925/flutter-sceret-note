@@ -195,7 +195,6 @@ class _MyAppState extends State<MainPage> {
       },
       child: Card(
         shape: RoundedRectangleBorder(
-            //<-- SEE HERE
             side: const BorderSide(
               color: Color.fromARGB(255, 188, 188, 188),
             ),
@@ -261,6 +260,7 @@ class _MyAppState extends State<MainPage> {
                 ruleController.text,
                 rating.toString()
               ]);
+              ruleController.clear();
             },
           ),
           suffixIconColor: Colors.red,
@@ -319,9 +319,14 @@ class _MyAppState extends State<MainPage> {
                 ),
               ],
             ),
-            content: Text(rule,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 18)),
+            content: Container(
+              constraints: BoxConstraints(maxHeight: 100, minHeight: 25),
+              child: SingleChildScrollView(
+                child: Text(rule,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white, fontSize: 18)),
+              ),
+            ),
             actions: <Widget>[
               TextButton(
                 child: const Icon(
