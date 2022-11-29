@@ -24,7 +24,8 @@ class _MyAppState extends State<MainPage> {
   String title = "";
   double deviceWidth = 300;
   late String key;
-  double rating = 0.0;
+  double rating = 3;
+
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   TextEditingController ruleController = TextEditingController();
   void getRules() async {
@@ -92,7 +93,6 @@ class _MyAppState extends State<MainPage> {
       appBar: Nav(true, context),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
               height: 40,
@@ -116,13 +116,15 @@ class _MyAppState extends State<MainPage> {
                     allowHalfRating: true,
                     itemCount: 5,
                     itemSize: 35,
-                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                     itemBuilder: (context, _) => Icon(
                       Icons.star,
                       color: Colors.amber[600],
                     ),
-                    onRatingUpdate: (rating) {
-                      rating = rating;
+                    onRatingUpdate: (star) {
+                      setState(() {
+                        rating = star;
+                      });
                     },
                   ),
                 ],
@@ -185,11 +187,11 @@ class _MyAppState extends State<MainPage> {
     );
   }
 
-  InkWell ruleCard(
-      String description, String Date, int index, BuildContext context) {
+  InkWell ruleCard(String description, String Date, String rating, int index,
+      BuildContext context) {
     return InkWell(
       onTap: () {
-        popup(description, Date, index, context);
+        popup(description, Date, rating, index, context);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -201,21 +203,29 @@ class _MyAppState extends State<MainPage> {
         color: const Color.fromARGB(31, 67, 67, 67),
         margin: const EdgeInsets.symmetric(vertical: 15),
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SizedBox(
-            width: deviceWidth - 50,
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              maxLines: null,
-              text: TextSpan(
-                text: description,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 210, 210, 210),
-                  height: 1.4,
-                  fontSize: 20.0,
+          padding: const EdgeInsets.all(5.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  width: deviceWidth - 50,
+                  child: RichText(
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: null,
+                    text: TextSpan(
+                      text: description,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 232, 231, 231),
+                          height: 1.4,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -230,7 +240,7 @@ class _MyAppState extends State<MainPage> {
     } catch (e) {
       description = "복호화 실패";
     }
-    return ruleCard(description, rule[0], index, context);
+    return ruleCard(description, rule[0], rule[2], index, context);
   }
 
   Padding ruleInput(OutlineInputBorder Function() borderStyles) {
@@ -249,7 +259,7 @@ class _MyAppState extends State<MainPage> {
               addRule([
                 DateFormat('yyyy년MM월dd일').format(DateTime.now()),
                 ruleController.text,
-                5.toString()
+                rating.toString()
               ]);
             },
           ),
@@ -286,15 +296,29 @@ class _MyAppState extends State<MainPage> {
     );
   }
 
-  void popup(String rule, String Date, int index, context) {
+  void popup(String rule, String Date, String rating, int index, context) {
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             backgroundColor: Colors.black54,
-            title: Text(Date,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 18)),
+            title: Column(
+              children: [
+                Text(Date,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white, fontSize: 18)),
+                RatingBarIndicator(
+                  direction: Axis.horizontal,
+                  itemCount: 5,
+                  rating: double.parse(rating),
+                  itemSize: 18,
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star,
+                    color: Colors.amber[200],
+                  ),
+                ),
+              ],
+            ),
             content: Text(rule,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 18)),
