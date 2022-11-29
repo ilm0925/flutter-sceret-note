@@ -215,7 +215,7 @@ class _MyAppState extends State<MainPage> {
                     overflow: TextOverflow.ellipsis,
                     maxLines: null,
                     text: TextSpan(
-                      text: description,
+                      text: description.replaceAll("\n", " "),
                       style: const TextStyle(
                           color: Color.fromARGB(255, 232, 231, 231),
                           height: 1.4,
