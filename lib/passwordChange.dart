@@ -69,6 +69,12 @@ class _passwordChageState extends State<passwordChage> {
   }
 
   void Submit() {
-	
+    try {
+      validatePassword();
+    } catch (e) {
+		passwordValidateError(context);
+	}
   }
+
+  void validatePassword() {}
 }

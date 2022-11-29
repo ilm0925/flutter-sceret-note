@@ -42,3 +42,42 @@ OutlineInputBorder borderStyle() {
     borderRadius: BorderRadius.circular(15),
   );
 }
+
+void passwordValidateError(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black45,
+          content: const Text("비밀번호 틀림",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white, fontSize: 18)),
+          actions: <Widget>[
+            TextButton(
+              child: Center(
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 1,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 24.0,
+                    ),
+                  ],
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
+}
