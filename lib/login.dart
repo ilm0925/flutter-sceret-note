@@ -75,7 +75,7 @@ class _LoginState extends State<Login> {
       // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/note');
     } else {
-      Crypto crypto = Crypto(hash, 16);
+      Crypto crypto = Crypto(hash);
       if (crypto.encryptSHA256(text) == hash) {
         // print(Provider.of<KeyProvider>(context).getKey);
         Provider.of<KeyProvider>(context, listen: false).setKey(text);

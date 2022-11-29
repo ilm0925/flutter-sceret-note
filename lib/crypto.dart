@@ -3,21 +3,22 @@ import 'dart:convert';
 import 'package:encrypt/encrypt.dart'; // for the utf8.encode method
 
 class Crypto {
-  var key;
-  var iv;
+  var _key;
+  IV _iv = IV.fromLength(16);
 
-  Crypto(String hash, int ivLength) {
-    key = Key.fromUtf8(hash);
-    iv = IV.fromLength(ivLength);
+  Crypto(
+    String hash,
+  ) {
+    _key = Key.fromUtf8(hash);
   }
   String encryptBase64(String plainText) {
-    final encrypter = Encrypter(AES(key));
-    return encrypter.encrypt(plainText, iv: iv).base64.toString();
+    final encrypter = Encrypter(AES(_key));
+    return encrypter.encrypt(plainText, iv: _iv).base64.toString();
   }
 
   String decryptBase64(String encrypted) {
-    final decrypter = Encrypter(AES(key));
-    return decrypter.decrypt64(encrypted, iv: iv);
+    final decrypter = Encrypter(AES(_key));
+    return decrypter.decrypt64(encrypted, iv: _iv);
   }
 
   String encryptSHA256(String plainText) {

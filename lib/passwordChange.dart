@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:secret_note/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_Widgets.dart';
@@ -14,6 +15,8 @@ class PasswordChage extends StatefulWidget {
 
 class _PasswordChageState extends State<PasswordChage> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  TextEditingController currentPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
   String? hashcode;
 
   @override
@@ -24,10 +27,7 @@ class _PasswordChageState extends State<PasswordChage> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController currentPasswordController = TextEditingController();
-    TextEditingController newPasswordController = TextEditingController();
     // currentKey = Provider.of<KeyProvider>(context, listen: false).getKey;
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
       appBar: Nav(false, context),
@@ -60,6 +60,26 @@ class _PasswordChageState extends State<PasswordChage> {
     );
   }
 
+  void submit() async {
+    try {
+      validatePassword();
+    } catch (e) {
+      passwordValidateError(context);
+    }
+    // 모든 글들을 decrypt => 새 비번으로 encrypt 반복
+    SharedPreferences prefs = await _prefs;
+    String key = Provider.of<KeyProvider>(context, listen: false).getKey;
+    List<String>? rules = await getRules();
+    Crypto crypto = Crypto(key);
+	String newHash = crypto.encryptSHA256(newPasswordController.text);
+    if (rules == null || rules.isEmpty) {
+      prefs.setString("password", newHash);
+      print("규칙 없는 상태로 비밀번호 변경");
+    }else{
+
+	}
+  }
+
   Padding input(String title, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -79,18 +99,6 @@ class _PasswordChageState extends State<PasswordChage> {
             labelStyle: const TextStyle(color: Colors.white60, fontSize: 20)),
       ),
     );
-  }
-
-  void submit() async {
-    try {
-      validatePassword();
-    } catch (e) {
-      passwordValidateError(context);
-    }
-    // 모든 글들을 decrypt => 새 비번으로 encrypt 반복
-    String key = Provider.of<KeyProvider>(context, listen: false).getKey;
-    List<String>? rules = await getRules();
-    print(rules);
   }
 
   Future<String?> getHash() async {

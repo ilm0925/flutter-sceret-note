@@ -64,7 +64,7 @@ class _MyAppState extends State<MainPage> {
     SharedPreferences pref = await _prefs;
     List<String>? importedRules = pref.getStringList("rules");
     importedRules ??= [];
-    Crypto crypto = Crypto(key, 16);
+    Crypto crypto = Crypto(key);
     rule[1] = crypto.encryptBase64(rule[1]);
     importedRules.add(json.encode(rule));
 
@@ -201,7 +201,7 @@ class _MyAppState extends State<MainPage> {
   }
 
   dynamic ruleBox(List<dynamic> rule, int index) {
-    Crypto crypto = Crypto(key, 16);
+    Crypto crypto = Crypto(key);
     String description;
     try {
       description = crypto.decryptBase64(rule[1]);
