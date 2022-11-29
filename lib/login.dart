@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:secret_note/Custom_Widgets.dart';
 import 'package:secret_note/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'key.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -112,6 +115,8 @@ class _LoginState extends State<Login> {
     } else {
       Crypto crypto = Crypto(hash, 16);
       if (crypto.encryptSHA256(text) == hash) {
+        // print(Provider.of<KeyProvider>(context).getKey);
+        Provider.of<KeyProvider>(context, listen: false).setKey(text);
         Navigator.pushNamed(context, '/note');
       } else {
         Popup("비밀번호 틀림");
