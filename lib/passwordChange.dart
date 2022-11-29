@@ -68,7 +68,7 @@ class _PasswordChageState extends State<PasswordChage> {
     try {
       validatePassword();
     } catch (e) {
-      passwordValidateError(context);
+      Alert("비밀번호가 유효하지않습니다", context);
       return;
     }
     // 모든 글들을 decrypt => 새 비번으로 encrypt 반복

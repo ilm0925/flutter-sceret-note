@@ -43,13 +43,13 @@ OutlineInputBorder borderStyle() {
   );
 }
 
-void passwordValidateError(BuildContext context) {
+void Alert(String message, BuildContext context) {
   showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.black45,
-          content: const Text("비밀번호 틀림",
+          content: Text(message,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 18)),
           actions: <Widget>[
@@ -78,6 +78,7 @@ void passwordValidateError(BuildContext context) {
               },
             ),
           ],
+          actionsPadding: const EdgeInsets.all(0),
         );
       });
 }

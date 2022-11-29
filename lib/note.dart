@@ -61,6 +61,9 @@ class _MyAppState extends State<MainPage> {
   }
 
   void addRule(List<String> rule) async {
+    if (ruleController.text.length < 3) {
+      return Alert("내용이 너무 적음", context);
+    }
     SharedPreferences pref = await _prefs;
     List<String>? importedRules = pref.getStringList("rules");
     importedRules ??= [];

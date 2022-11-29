@@ -82,7 +82,7 @@ class _LoginState extends State<Login> {
         Provider.of<KeyProvider>(context, listen: false).setKey(text);
         Navigator.pushNamed(context, '/note');
       } else {
-        passwordValidateError(context);
+        Alert("비밀번호가 유효하지않습니다",context);
       }
     }
   }
