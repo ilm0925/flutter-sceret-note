@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
     importedRules ??= [];
     String? hash = pref.getString("password");
     if (hash != null) {
-      Crypto crypto = Crypto("hashhashhashhash", 16);
+      Crypto crypto = Crypto("1234567812345678", 16);
       rule[1] = crypto.encryptBase64(rule[1]);
       importedRules.add(json.encode(rule));
 
@@ -176,7 +176,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   dynamic ruleBox(List<dynamic> rule, int index) {
-    Crypto crypto = Crypto("hashhashhashhash", 16);
+    Crypto crypto = Crypto("1234567812345678", 16);
     String description;
     try {
       description = crypto.decryptBase64(rule[1]);

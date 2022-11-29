@@ -55,14 +55,14 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    print("dd");
+    init();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
-      appBar: Nav(false,context),
+      appBar: Nav(false, context),
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width - 50,
@@ -93,14 +93,13 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-  
-  void init()async{
+
+  void init() async {
     SharedPreferences prefs = await _prefs;
     String? hash = prefs.getString("password");
-	if(hash == null){
-		Navigator.pushNamed(context, '/note');
-	}
- 
+    if (hash == null) {
+      Navigator.pushNamed(context, '/note');
+    }
   }
 
   void submit(String text) async {
@@ -108,8 +107,6 @@ class _LoginState extends State<Login> {
     SharedPreferences prefs = await _prefs;
     String? hash = prefs.getString("password");
     if (hash == null) {
-      prefs.setString("password",
-          "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4");
       Navigator.pushNamed(context, '/note');
     } else {
       Crypto crypto = Crypto(hash, 16);
@@ -120,5 +117,4 @@ class _LoginState extends State<Login> {
       }
     }
   }
-
 }
