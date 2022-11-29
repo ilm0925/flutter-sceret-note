@@ -4,7 +4,7 @@ import 'package:secret_note/passwordChange.dart';
 
 import 'key.dart';
 import 'login.dart';
-import 'showRule.dart';
+import 'note.dart';
 
 void main() {
   runApp(MyApp());

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:secret_note/crypto.dart';
 import 'package:secret_note/key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'Custom_Widgets.dart';
 
 class MainPage extends StatefulWidget {
@@ -25,7 +25,7 @@ class _MyAppState extends State<MainPage> {
   String title = "";
   double deviceWidth = 300;
   late String key;
-
+  double rating = 0.0;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   void getRules() async {
@@ -86,8 +86,6 @@ class _MyAppState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: no_leading_underscores_for_local_identifiers
-
     deviceWidth = MediaQuery.of(context).size.width;
     key = Provider.of<KeyProvider>(context).getKey ?? "1234567812345678";
     return Scaffold(
@@ -101,9 +99,34 @@ class _MyAppState extends State<MainPage> {
               height: 40,
             ),
             Center(
-              child: SizedBox(
-                width: deviceWidth - 50,
-                child: ruleInput(borderStyles),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: deviceWidth - 50,
+                    child: ruleInput(borderStyles),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  RatingBar.builder(
+                    glowRadius: 0.1,
+                    glowColor: Colors.amber[300],
+                    initialRating: 2.5,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemSize: 35,
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    itemBuilder: (context, _) => Icon(
+                      Icons.star,
+                      color: Colors.amber[600],
+                    ),
+                    onRatingUpdate: (rating) {
+                      rating = rating;
+                    },
+                  ),
+                ],
               ),
             ),
             const SizedBox(
