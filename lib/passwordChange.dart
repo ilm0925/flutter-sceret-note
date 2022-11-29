@@ -76,10 +76,10 @@ class _PasswordChageState extends State<PasswordChage> {
     List<String>? rules = await getRules();
     Crypto crypto = Crypto(key);
     String newHash = crypto.encryptSHA256(newPasswordController.text);
-    //prefs.setString("password", newHash);
+    prefs.setString("password", newHash);
     if (rules == null || rules.isEmpty) {
     } else {
-      if (newPasswordController.text.length < 4) {
+      if (newPasswordController.text.length < 3) {
         setState(() {
           errorState = true;
           errorMessage = "새 비밀번호는 4자 이상이어야합니다";
@@ -91,7 +91,7 @@ class _PasswordChageState extends State<PasswordChage> {
         });
         return;
       }
-      List<dynamic> newRules = [];
+      List<String> newRules = [];
 
       String newKey = Provider.of<KeyProvider>(context, listen: false)
           .convertToKey(newPasswordController.text);
@@ -106,8 +106,10 @@ class _PasswordChageState extends State<PasswordChage> {
         String decrypted = crypto.decryptBase64(originalRule[1]);
         String newEncryptedRule = newCrypter.encryptBase64(decrypted);
         originalRule[1] = newEncryptedRule;
-        newRules.add(originalRule);
+        newRules.add(json.encode(originalRule));
       }
+      print(newRules);
+        prefs.setStringList("rules", newRules);
       setState(() {
         Changed = true;
       });
@@ -152,7 +154,10 @@ class _PasswordChageState extends State<PasswordChage> {
   }
 
   void checkExist() async {
-    hashcode = await getHash();
+    String? imprortedHash = await getHash();
+    setState(() {
+      hashcode = imprortedHash;
+    });
   }
 
   Widget Errormessage() {
