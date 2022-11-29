@@ -64,27 +64,23 @@ class _MyAppState extends State<MainPage> {
     SharedPreferences pref = await _prefs;
     List<String>? importedRules = pref.getStringList("rules");
     importedRules ??= [];
-    String? hash = pref.getString("password");
-    if (hash != null) {
-      Crypto crypto = Crypto(key, 16);
-      rule[1] = crypto.encryptBase64(rule[1]);
-      importedRules.add(json.encode(rule));
+    Crypto crypto = Crypto(key, 16);
+    rule[1] = crypto.encryptBase64(rule[1]);
+    importedRules.add(json.encode(rule));
 
-      //   importedRules.removeLast();
-      //   print(importedRules);
-      pref.setStringList("rules", importedRules);
+    //   importedRules.removeLast();
+    //   print(importedRules);
+    pref.setStringList("rules", importedRules);
 
-      setState(() {
-        Rules = importedRules!;
-        title = "이건 꼭 지키기";
-      });
-    }
+    setState(() {
+      Rules = importedRules!;
+      title = "이건 꼭 지키기";
+    });
   }
 
   @override
   void initState() {
     super.initState();
-
     getRules();
   }
 
@@ -93,7 +89,7 @@ class _MyAppState extends State<MainPage> {
     // ignore: no_leading_underscores_for_local_identifiers
 
     deviceWidth = MediaQuery.of(context).size.width;
-    key = Provider.of<KeyProvider>(context).getKey;
+    key = Provider.of<KeyProvider>(context).getKey ?? "1234567812345678";
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
       appBar: Nav(true, context),

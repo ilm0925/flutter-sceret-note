@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/note': (context) => const MainPage(),
-          '/passwordChange': (context) => const passwordChage(),
+          '/passwordChange': (context) => const PasswordChage(),
         },
         home: const Login(),
       ),
