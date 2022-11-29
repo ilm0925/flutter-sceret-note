@@ -17,7 +17,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MyAppState extends State<MainPage> {
-  String hint = "규칙 입력";
   String inputRules = "규칙을 추가해주세요";
 
   // ignore: non_constant_identifier_names
@@ -27,7 +26,7 @@ class _MyAppState extends State<MainPage> {
   late String key;
   double rating = 0.0;
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
+  TextEditingController ruleController = TextEditingController();
   void getRules() async {
     SharedPreferences prefs = await _prefs;
     List<String>? importedRules = prefs.getStringList("rules");
@@ -234,41 +233,56 @@ class _MyAppState extends State<MainPage> {
     return ruleCard(description, rule[0], index, context);
   }
 
-  TextField ruleInput(OutlineInputBorder Function() borderStyles) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color.fromARGB(31, 255, 255, 255),
-        disabledBorder: borderStyles(),
-        hintStyle: const TextStyle(
-            color: Color.fromARGB(255, 180, 180, 180),
-            fontWeight: FontWeight.bold,
-            fontSize: 18),
-        border: borderStyles(),
+  Padding ruleInput(OutlineInputBorder Function() borderStyles) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: TextField(
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(20),
+          suffixIcon: InkWell(
+            child: const Icon(
+              Icons.send,
+            ),
+            onTap: () {
+              addRule([
+                DateFormat('yyyy년MM월dd일').format(DateTime.now()),
+                ruleController.text,
+                5.toString()
+              ]);
+            },
+          ),
+          suffixIconColor: Colors.red,
+          hintText: "내용 입력",
+          filled: true,
+          fillColor: const Color.fromARGB(31, 255, 255, 255),
+          disabledBorder: borderStyles(),
+          hintStyle: const TextStyle(
+              color: Color.fromARGB(255, 180, 180, 180),
+              fontWeight: FontWeight.bold,
+              fontSize: 18),
+          border: borderStyles(),
+        ),
+        // onSubmitted: (text) {
+        //   addRule([
+        //     DateFormat('yyyy년MM월dd일').format(DateTime.now()),
+        //     text,
+        //     5.toString()
+        //   ]);
+        // },
+        controller: ruleController,
+        textAlign: TextAlign.left,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        onChanged: (text) {
+          setState(() {
+            inputRules = text;
+          });
+        },
       ),
-      onSubmitted: (text) {
-        addRule([
-          DateFormat('yyyy년MM월dd일').format(DateTime.now()),
-          text,
-          5.toString()
-        ]);
-      },
-      onTap: () {
-        setState(() {
-          hint = "";
-        });
-      },
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-      onChanged: (text) {
-        setState(() {
-          inputRules = text;
-        });
-      },
     );
   }
 
