@@ -109,12 +109,13 @@ class _PasswordChageState extends State<PasswordChage> {
         });
         List<dynamic> originalRule = json.decode(rules[i]);
         String decrypted = crypto.decryptBase64(originalRule[1]);
-        print(decrypted);
         String newEncryptedRule = newCrypter.encryptBase64(decrypted);
+        print("${rules[i]} => 에서 ${newEncryptedRule}");
         originalRule[1] = newEncryptedRule;
         newRules.add(json.encode(originalRule));
       }
       prefs.setStringList("rules", newRules);
+      print(newRules);
       setState(() {
         Changed = true;
       });
