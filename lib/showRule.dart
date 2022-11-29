@@ -24,6 +24,8 @@ class _MyAppState extends State<MainPage> {
   var Rules = [];
   String title = "";
   double deviceWidth = 300;
+  late String key;
+
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   void getRules() async {
@@ -64,7 +66,7 @@ class _MyAppState extends State<MainPage> {
     importedRules ??= [];
     String? hash = pref.getString("password");
     if (hash != null) {
-      Crypto crypto = Crypto("1234567812345678", 16);
+      Crypto crypto = Crypto(key, 16);
       rule[1] = crypto.encryptBase64(rule[1]);
       importedRules.add(json.encode(rule));
 
@@ -91,7 +93,7 @@ class _MyAppState extends State<MainPage> {
     // ignore: no_leading_underscores_for_local_identifiers
 
     deviceWidth = MediaQuery.of(context).size.width;
-
+    key = Provider.of<KeyProvider>(context).getKey;
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
       appBar: Nav(true, context),
@@ -116,7 +118,7 @@ class _MyAppState extends State<MainPage> {
               height: 20,
             ),
             Text(
-              Provider.of<KeyProvider>(context).getKey,
+              title,
               style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -165,18 +167,11 @@ class _MyAppState extends State<MainPage> {
     );
   }
 
-  dynamic ruleBox(List<dynamic> rule, int index) {
-    Crypto crypto = Crypto("1234567812345678", 16);
-    String description;
-    try {
-      description = crypto.decryptBase64(rule[1]);
-    } catch (e) {
-      print("암호화가 안된 상태로 저장됨");
-      return;
-    }
+  InkWell ruleCard(
+      String description, String Date, int index, BuildContext context) {
     return InkWell(
       onTap: () {
-        popup(description, rule[0], index, context);
+        popup(description, Date, index, context);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -207,6 +202,17 @@ class _MyAppState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+  dynamic ruleBox(List<dynamic> rule, int index) {
+    Crypto crypto = Crypto(key, 16);
+    String description;
+    try {
+      description = crypto.decryptBase64(rule[1]);
+    } catch (e) {
+      description = "복호화 실패";
+    }
+    return ruleCard(description, rule[0], index, context);
   }
 
   TextField ruleInput(OutlineInputBorder Function() borderStyles) {
