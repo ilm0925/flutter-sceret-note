@@ -107,6 +107,7 @@ class _LoginState extends State<Login> {
     SharedPreferences prefs = await _prefs;
     String? hash = prefs.getString("password");
     if (hash == null) {
+      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/note');
     } else {
       Crypto crypto = Crypto(hash, 16);

@@ -7,7 +7,7 @@ class Crypto {
   var iv;
 
   Crypto(String hash, int ivLength) {
-    key = Key.fromUtf8(hash.substring(0, 16));
+    key = Key.fromUtf8(hash);
     iv = IV.fromLength(ivLength);
   }
   String encryptBase64(String plainText) {
