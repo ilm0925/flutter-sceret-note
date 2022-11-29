@@ -48,10 +48,27 @@ class _passwordChageState extends State<passwordChage> {
             children: [
               input("현재 비밀번호", currentPasswordController),
               input("새 비밀번호", newPasswordController),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: Submit,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[400],
+                    padding: const EdgeInsets.all(14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8))),
+                child: const Text(
+                  "변경하기",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  void Submit() {
+	
   }
 }
