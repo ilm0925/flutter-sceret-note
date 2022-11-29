@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:secret_note/crypto.dart';
@@ -18,6 +22,15 @@ class _PasswordChageState extends State<PasswordChage> {
   TextEditingController currentPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   String? hashcode;
+  bool errorState = false;
+  String errorMessage = "";
+
+  bool encrypteProgressState = false;
+
+  int maxProgress = 0;
+  int currentProgress = 0;
+
+  bool Changed = false;
 
   @override
   void initState() {
@@ -38,21 +51,12 @@ class _PasswordChageState extends State<PasswordChage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Errormessage(),
+              EncrypteProgress(),
               if (hashcode != null) input("현재 비밀번호", currentPasswordController),
               input("새 비밀번호", newPasswordController),
               const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: submit,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[400],
-                    padding: const EdgeInsets.all(14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                child: const Text(
-                  "변경하기",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              )
+              ButtonWidget()
             ],
           ),
         ),
@@ -71,13 +75,43 @@ class _PasswordChageState extends State<PasswordChage> {
     String key = Provider.of<KeyProvider>(context, listen: false).getKey;
     List<String>? rules = await getRules();
     Crypto crypto = Crypto(key);
-	String newHash = crypto.encryptSHA256(newPasswordController.text);
+    String newHash = crypto.encryptSHA256(newPasswordController.text);
+    //prefs.setString("password", newHash);
     if (rules == null || rules.isEmpty) {
-      prefs.setString("password", newHash);
-      print("규칙 없는 상태로 비밀번호 변경");
-    }else{
+    } else {
+      if (newPasswordController.text.length < 4) {
+        setState(() {
+          errorState = true;
+          errorMessage = "새 비밀번호는 4자 이상이어야합니다";
+        });
+        Timer(const Duration(seconds: 5), () {
+          setState(() {
+            errorState = false;
+          });
+        });
+        return;
+      }
+      List<dynamic> newRules = [];
 
-	}
+      String newKey = Provider.of<KeyProvider>(context, listen: false)
+          .convertToKey(newPasswordController.text);
+      Crypto newCrypter = Crypto(newKey);
+      for (int i = 0; i < rules.length; i++) {
+        setState(() {
+          encrypteProgressState = true;
+          maxProgress = rules.length;
+          currentProgress = i + 1;
+        });
+        List<dynamic> originalRule = json.decode(rules[i]);
+        String decrypted = crypto.decryptBase64(originalRule[1]);
+        String newEncryptedRule = newCrypter.encryptBase64(decrypted);
+        originalRule[1] = newEncryptedRule;
+        newRules.add(originalRule);
+      }
+      setState(() {
+        Changed = true;
+      });
+    }
   }
 
   Padding input(String title, TextEditingController controller) {
@@ -119,5 +153,69 @@ class _PasswordChageState extends State<PasswordChage> {
 
   void checkExist() async {
     hashcode = await getHash();
+  }
+
+  Widget Errormessage() {
+    if (errorState) {
+      return Text(
+        errorMessage,
+        style: TextStyle(
+            color: Colors.red[300], fontWeight: FontWeight.bold, fontSize: 20),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget EncrypteProgress() {
+    if (encrypteProgressState) {
+      return Column(
+        children: [
+          const Text(
+            "새 비밀번호로 재 암호화 중..",
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          Text(
+            "${currentProgress}/${maxProgress} 완료됨",
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const SizedBox(height: 5)
+        ],
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget ButtonWidget() {
+    if (Changed) {
+      return ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, "/");
+        },
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue[400],
+            padding: const EdgeInsets.all(14),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+        child: const Text(
+          "홈으로 가기",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      );
+    } else {
+      return ElevatedButton(
+        onPressed: submit,
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red[400],
+            padding: const EdgeInsets.all(14),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+        child: const Text(
+          "변경하기",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      );
+    }
   }
 }

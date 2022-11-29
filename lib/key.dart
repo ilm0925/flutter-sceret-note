@@ -5,13 +5,13 @@ class KeyProvider with ChangeNotifier {
   String get getKey => _key;
 
   void setKey(String password) {
-    if (password.length >= 16) {
-      _key = password.substring(0, 16);
-      return;
-    }
+    _key = convertToKey(password);
+  }
+
+  String convertToKey(String password) {
     while (password.length < 16) {
       password += password;
     }
-    _key = password;
+    return password.substring(0, 16);
   }
 }
