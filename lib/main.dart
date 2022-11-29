@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:secret_note/crypto.dart';
 import 'package:secret_note/login.dart';
+import 'package:secret_note/passwordChange.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Custom_Widgets.dart';
@@ -13,6 +14,7 @@ void main() {
     initialRoute: '/',
     routes: {
       '/note': (context) => const MyApp(),
+      '/passwordChange': (context) => const passwordChage(),
     },
     home: const Login(),
   ));
@@ -61,6 +63,9 @@ class _MyAppState extends State<MyApp> {
     pref.setStringList("rules", importedRules);
     setState(() {
       Rules = importedRules;
+      if (Rules.isEmpty) {
+        title = "규칙 추가하기";
+      }
     });
   }
 
@@ -73,12 +78,14 @@ class _MyAppState extends State<MyApp> {
       Crypto crypto = Crypto("hashhashhashhash", 16);
       rule[1] = crypto.encryptBase64(rule[1]);
       importedRules.add(json.encode(rule));
+
+      //   importedRules.removeLast();
+      //   print(importedRules);
       pref.setStringList("rules", importedRules);
-      importedRules.removeLast();
-      rule[1] = crypto.decryptBase64(rule[1]);
-      importedRules.add(json.encode(rule));
+
       setState(() {
         Rules = importedRules!;
+        title = "이건 꼭 지키기";
       });
     }
   }
@@ -97,7 +104,7 @@ class _MyAppState extends State<MyApp> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
-      appBar: Nav(true),
+      appBar: Nav(true, context),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,10 +175,18 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  InkWell ruleBox(List<dynamic> rule, int index) {
+  dynamic ruleBox(List<dynamic> rule, int index) {
+    Crypto crypto = Crypto("hashhashhashhash", 16);
+    String description;
+    try {
+      description = crypto.decryptBase64(rule[1]);
+    } catch (e) {
+      print("암호화가 안된 상태로 저장됨");
+      return;
+    }
     return InkWell(
       onTap: () {
-        popup(rule[1], rule[0], index);
+        popup(description, rule[0], index, context);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -190,7 +205,7 @@ class _MyAppState extends State<MyApp> {
               overflow: TextOverflow.ellipsis,
               maxLines: null,
               text: TextSpan(
-                text: rule[1],
+                text: description,
                 style: const TextStyle(
                   color: Color.fromARGB(255, 210, 210, 210),
                   height: 1.4,
@@ -242,7 +257,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void popup(String rule, String Date, int index) {
+  void popup(String rule, String Date, int index, context) {
     showDialog(
         context: context,
         builder: (context) {

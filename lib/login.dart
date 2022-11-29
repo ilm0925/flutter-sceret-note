@@ -53,10 +53,16 @@ class _LoginState extends State<Login> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    print("dd");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
-      appBar: Nav(false),
+      appBar: Nav(false,context),
       body: Center(
         child: SizedBox(
           width: MediaQuery.of(context).size.width - 50,
@@ -87,6 +93,15 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+  
+  void init()async{
+    SharedPreferences prefs = await _prefs;
+    String? hash = prefs.getString("password");
+	if(hash == null){
+		Navigator.pushNamed(context, '/note');
+	}
+ 
+  }
 
   void submit(String text) async {
     passwordController.clear();
@@ -106,8 +121,4 @@ class _LoginState extends State<Login> {
     }
   }
 
-  OutlineInputBorder borderStyle() {
-    return const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white60));
-  }
 }

@@ -4,7 +4,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
-AppBar Nav(bool isLogin) {
+AppBar Nav(bool isLogin, context) {
   if (isLogin) {
     return AppBar(
         backgroundColor: Colors.black,
@@ -16,7 +16,7 @@ AppBar Nav(bool isLogin) {
           new IconButton(
             icon: const Icon(Icons.security),
             tooltip: 'Hi!',
-            onPressed: () => {},
+            onPressed: () => {Navigator.pushNamed(context, '/passwordChange')},
           ),
         ]);
   }
@@ -33,5 +33,12 @@ Text C_Text(String text, Color color, double size) {
   return Text(
     text,
     style: TextStyle(color: color, fontSize: size),
+  );
+}
+
+OutlineInputBorder borderStyle() {
+  return OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.white60),
+    borderRadius: BorderRadius.circular(15),
   );
 }
