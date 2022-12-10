@@ -5,6 +5,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:secret_note/components/ratingBar.dart';
+import 'package:secret_note/components/ruleInput.dart';
+import 'package:secret_note/components/ruleWidget.dart';
 import 'package:secret_note/crypto.dart';
 import 'package:secret_note/key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,8 +20,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MyAppState extends State<MainPage> {
-  String inputRules = "규칙을 추가해주세요";
-
   // ignore: non_constant_identifier_names
   var Rules = [];
   String title = "";
@@ -97,7 +97,6 @@ class _MyAppState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
-    key = Provider.of<KeyProvider>(context).getKey ?? "1234567812345678";
     return Scaffold(
       backgroundColor: const Color.fromARGB(31, 188, 188, 188),
       appBar: Nav(true, context),
@@ -112,7 +111,12 @@ class _MyAppState extends State<MainPage> {
                 children: [
                   SizedBox(
                     width: deviceWidth - 50,
-                    child: ruleInput(borderStyles),
+                    child: ruleInput(
+                      addRule: addRule,
+                      rating: rating,
+                      ruleController: ruleController,
+                      borderStyles: borderStyles,
+                    ),
                   ),
                   const SizedBox(
                     height: 15,
@@ -156,8 +160,13 @@ class _MyAppState extends State<MainPage> {
         itemBuilder: (c, i) {
           return Column(
             children: [
-              ruleBox(json.decode(Rules[i]), i),
-              line(),
+              RuleWidget(
+                rule: Rules[i],
+                idx: i,
+                popup: popup,
+                deviceWidth: deviceWidth,
+              ),
+              line()
             ],
           );
         });
@@ -177,115 +186,6 @@ class _MyAppState extends State<MainPage> {
       width: deviceWidth,
       height: 0.2,
       color: const Color.fromARGB(255, 100, 100, 100),
-    );
-  }
-
-  InkWell ruleCard(String description, String Date, String rating, int index,
-      BuildContext context) {
-    return InkWell(
-      onTap: () {
-        popup(description, Date, rating, index, context);
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-            side: const BorderSide(
-              color: Color.fromARGB(255, 188, 188, 188),
-            ),
-            borderRadius: BorderRadius.circular(20)),
-        color: const Color.fromARGB(31, 67, 67, 67),
-        margin: const EdgeInsets.symmetric(vertical: 15),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: deviceWidth - 50,
-                  child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: null,
-                    text: TextSpan(
-                      text: description.replaceAll("\n", " "),
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 232, 231, 231),
-                          height: 1.4,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  dynamic ruleBox(List<dynamic> rule, int index) {
-    Crypto crypto = Crypto(key);
-    String description;
-    try {
-      description = crypto.decryptBase64(rule[1]);
-    } catch (e) {
-      description = "복호화 실패";
-    }
-    return ruleCard(description, rule[0], rule[2], index, context);
-  }
-
-  Padding ruleInput(OutlineInputBorder Function() borderStyles) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: TextField(
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(20),
-          suffixIcon: InkWell(
-            child: const Icon(
-              Icons.send,
-            ),
-            onTap: () {
-              addRule([
-                DateFormat('yyyy년MM월dd일').format(DateTime.now()),
-                ruleController.text,
-                rating.toString()
-              ]);
-              ruleController.clear();
-            },
-          ),
-          suffixIconColor: Colors.red,
-          hintText: "내용 입력",
-          filled: true,
-          fillColor: const Color.fromARGB(31, 255, 255, 255),
-          disabledBorder: borderStyles(),
-          hintStyle: const TextStyle(
-              color: Color.fromARGB(255, 180, 180, 180),
-              fontWeight: FontWeight.bold,
-              fontSize: 18),
-          border: borderStyles(),
-        ),
-        // onSubmitted: (text) {
-        //   addRule([
-        //     DateFormat('yyyy년MM월dd일').format(DateTime.now()),
-        //     text,
-        //     5.toString()
-        //   ]);
-        // },
-        controller: ruleController,
-        textAlign: TextAlign.left,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-        onChanged: (text) {
-          setState(() {
-            inputRules = text;
-          });
-        },
-      ),
     );
   }
 
