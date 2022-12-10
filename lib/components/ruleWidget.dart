@@ -32,22 +32,22 @@ class _ruleWidgetState extends State<RuleWidget> {
     if (showState) {
       return ruleBox(json.decode(widget.rule), widget.idx);
     }
-    return InkWell(
-      onTap: () {
-        setState(() {
-          showState = false;
-        });
-      },
-      child: const Card(
-        color: Color.fromARGB(31, 67, 67, 67),
-        margin: EdgeInsets.symmetric(vertical: 15),
-        child: Padding(
-            padding: EdgeInsets.all(5.0),
-            child: Icon(
+    return Card(
+      color: const Color.fromARGB(31, 67, 67, 67),
+      margin: const EdgeInsets.symmetric(vertical: 15),
+      child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                showState = true;
+              });
+            },
+            child: const Icon(
               Icons.visibility,
               color: Colors.white,
-            )),
-      ),
+            ),
+          )),
     );
   }
 
