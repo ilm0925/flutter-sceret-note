@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:secret_note/components/ratingBar.dart';
 import 'package:secret_note/crypto.dart';
 import 'package:secret_note/key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,6 +82,12 @@ class _MyAppState extends State<MainPage> {
     });
   }
 
+  changeRating(double star) {
+    setState(() {
+      rating = star;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -110,25 +117,8 @@ class _MyAppState extends State<MainPage> {
                   const SizedBox(
                     height: 15,
                   ),
-                  RatingBar.builder(
-                    glowRadius: 0.1,
-                    glowColor: Colors.amber[300],
-                    initialRating: 2.5,
-                    minRating: 1,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    itemCount: 5,
-                    itemSize: 35,
-                    itemPadding: const EdgeInsets.symmetric(horizontal: 1.0),
-                    itemBuilder: (context, _) => Icon(
-                      Icons.star,
-                      color: Colors.amber[600],
-                    ),
-                    onRatingUpdate: (star) {
-                      setState(() {
-                        rating = star;
-                      });
-                    },
+                  Star(
+                    chageRating: changeRating,
                   ),
                 ],
               ),
