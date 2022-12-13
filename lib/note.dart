@@ -25,6 +25,7 @@ class _MyAppState extends State<MainPage> {
   double deviceWidth = 300;
   late String key;
   double rating = 3;
+  List<bool> rulesShow = [];
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   TextEditingController ruleController = TextEditingController();
@@ -41,6 +42,9 @@ class _MyAppState extends State<MainPage> {
     setState(() {
       Rules = importedRules;
       title = "이건 꼭 지키기";
+      for (int i = 0; i < Rules.length; i++) {
+        rulesShow.add(false);
+      }
     });
   }
 
@@ -192,46 +196,88 @@ class _MyAppState extends State<MainPage> {
 
   InkWell ruleCard(String description, String Date, String rating, int index,
       BuildContext context) {
-    return InkWell(
-      onTap: () {
-        popup(description, Date, rating, index, context);
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-            side: const BorderSide(
-              color: Color.fromARGB(255, 188, 188, 188),
-            ),
-            borderRadius: BorderRadius.circular(20)),
-        color: const Color.fromARGB(31, 67, 67, 67),
-        margin: const EdgeInsets.symmetric(vertical: 15),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: deviceWidth - 50,
-                  child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: null,
-                    text: TextSpan(
-                      text: description.replaceAll("\n", " "),
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 232, 231, 231),
-                          height: 1.4,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
+    if (rulesShow[index] == true) {
+      return InkWell(
+        onTap: () {
+          if (rulesShow[index] == true) {
+            popup(description, Date, rating, index, context);
+          } else {
+            setState(() {
+              rulesShow[index] = true;
+            });
+          }
+        },
+        onDoubleTap: () {
+          setState(() {
+            rulesShow[index] = false;
+          });
+        },
+        child: Card(
+          shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                color: Color.fromARGB(255, 188, 188, 188),
+              ),
+              borderRadius: BorderRadius.circular(20)),
+          color: const Color.fromARGB(31, 67, 67, 67),
+          margin: const EdgeInsets.symmetric(vertical: 15),
+          child: Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: deviceWidth - 50,
+                    child: RichText(
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: null,
+                      text: TextSpan(
+                        text: description.replaceAll("\n", " "),
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 232, 231, 231),
+                            height: 1.4,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return InkWell(
+          onTap: () {
+            setState(() {
+              rulesShow[index] = true;
+            });
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(
+                  color: Color.fromARGB(255, 188, 188, 188),
+                ),
+                borderRadius: BorderRadius.circular(20)),
+            color: const Color.fromARGB(31, 67, 67, 67),
+            margin: const EdgeInsets.symmetric(vertical: 15),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: SizedBox(
+                  width: deviceWidth - 50,
+                  child: const Padding(
+                    padding: EdgeInsets.all(3.0),
+                    child: Icon(
+                      Icons.visibility,
+                      color: Colors.white,
+                      size: 35,
+                    ),
+                  )),
+            ),
+          ));
+    }
   }
 
   dynamic ruleBox(List<dynamic> rule, int index) {
