@@ -42,7 +42,7 @@ class _MyAppState extends State<MainPage> {
     }
     setState(() {
       Rules = importedRules;
-      title = "이건 꼭 지키기";
+      title = "노트";
       for (int i = 0; i < Rules.length; i++) {
         rulesShow.add(false);
       }
