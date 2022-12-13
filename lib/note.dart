@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -74,7 +75,7 @@ class _MyAppState extends State<MainPage> {
     Crypto crypto = Crypto(key);
     rule[1] = crypto.encryptBase64(rule[1]);
     importedRules.add(json.encode(rule));
-
+    rulesShow.add(true);
     //   importedRules.removeLast();
     //   print(importedRules);
     pref.setStringList("rules", importedRules);
@@ -196,8 +197,7 @@ class _MyAppState extends State<MainPage> {
 
   InkWell ruleCard(String description, String Date, String rating, int index,
       BuildContext context) {
-    if (rulesShow[index] == true) {
-      return InkWell(
+    return InkWell(
         onTap: () {
           if (rulesShow[index] == true) {
             popup(description, Date, rating, index, context);
@@ -221,63 +221,37 @@ class _MyAppState extends State<MainPage> {
           color: const Color.fromARGB(31, 67, 67, 67),
           margin: const EdgeInsets.symmetric(vertical: 15),
           child: Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: EdgeInsets.all(rulesShow[index] == true ? 10 : 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(3.0),
                   child: SizedBox(
-                    width: deviceWidth - 50,
-                    child: RichText(
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: null,
-                      text: TextSpan(
-                        text: description.replaceAll("\n", " "),
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 232, 231, 231),
-                            height: 1.4,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      width: deviceWidth - 50,
+                      child: rulesShow[index]
+                          ? RichText(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: null,
+                              text: TextSpan(
+                                text: description.replaceAll("\n", " "),
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 232, 231, 231),
+                                    height: 1.4,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.visibility,
+                              color: Colors.white,
+                              size: 35,
+                            )),
                 )
               ],
             ),
           ),
-        ),
-      );
-    } else {
-      return InkWell(
-          onTap: () {
-            setState(() {
-              rulesShow[index] = true;
-            });
-          },
-          child: Card(
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(
-                  color: Color.fromARGB(255, 188, 188, 188),
-                ),
-                borderRadius: BorderRadius.circular(20)),
-            color: const Color.fromARGB(31, 67, 67, 67),
-            margin: const EdgeInsets.symmetric(vertical: 15),
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: SizedBox(
-                  width: deviceWidth - 50,
-                  child: const Padding(
-                    padding: EdgeInsets.all(3.0),
-                    child: Icon(
-                      Icons.visibility,
-                      color: Colors.white,
-                      size: 35,
-                    ),
-                  )),
-            ),
-          ));
-    }
+        ));
   }
 
   dynamic ruleBox(List<dynamic> rule, int index) {
@@ -402,5 +376,21 @@ class _MyAppState extends State<MainPage> {
             actionsAlignment: MainAxisAlignment.spaceAround,
           );
         });
+  }
+
+  Widget wrapAnimatedBuilder(Widget child, Animation<double> animation) {
+    final rotate = Tween(begin: pi, end: 0.0).animate(animation);
+
+    return AnimatedBuilder(
+      animation: rotate,
+      child: widget,
+      builder: (_, widget) {
+        return Transform(
+          transform: Matrix4.rotationY(rotate.value),
+          child: widget,
+          alignment: Alignment.center,
+        );
+      },
+    );
   }
 }
